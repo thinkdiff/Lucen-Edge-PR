@@ -33,19 +33,16 @@ function ContactPage() {
 
       const scriptUrl = import.meta.env.VITE_GOOGLE_SHEET_WEB_APP_URL || "https://script.google.com/macros/s/AKfycbyHBc7CfUdoNRHewQBE1ofdg9gDcN68Uj8s0bQNiZO6jzVUlYEXjMTZrC0mmb2MhReb/exec";
       
-      const response = await fetch(scriptUrl, {
+      await fetch(scriptUrl, {
         method: "POST",
+        mode: "no-cors",
         body: formBody,
       });
 
-      const result = await response.json();
-      
-      if (result.result === "success") {
-        toast.success("Message sent successfully!");
-        setFormData({ name: "", email: "", company: "", message: "", type: "company" });
-      } else {
-        throw new Error(result.error || "Failed to submit form");
-      }
+      // Google Apps Script returns an opaque response (CORS), so we cannot read response.json()
+      // If the fetch doesn't throw a network error, we assume success.
+      toast.success("Message sent successfully!");
+      setFormData({ name: "", email: "", company: "", message: "", type: "company" });
     } catch (error) {
       console.error("Form submission error:", error);
       toast.error("An error occurred. Please try again.");
