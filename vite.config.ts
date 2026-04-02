@@ -2,6 +2,7 @@ import path from "path";
 import { defineConfig, loadEnv } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import { nitro } from "nitro/vite";
 import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { componentTagger } from "lovable-tagger";
@@ -159,11 +160,9 @@ function devServerFnErrorLogger() {
   };
 }
 
+process.env.NITRO_PRESET = "vercel";
+
 export default defineConfig(({ command, mode }) => {
-  // Set Nitro preset for Vercel deployment automatically on build
-  if (command === "build") {
-    process.env.NITRO_PRESET = "vercel";
-  }
 
   const env = loadEnv(mode, process.cwd(), "VITE_");
   const envDefine: Record<string, string> = {};
@@ -190,6 +189,7 @@ export default defineConfig(({ command, mode }) => {
       }),
       devClientErrorLogger(),
       devServerFnErrorLogger(),
+      nitro(),
       tanstackStart(),
       viteReact(),
       mode === "development" && componentTagger(),
